@@ -1,5 +1,5 @@
 import React from 'react'
-import { StyleSheet, View, TextInput, Button, Alert } from 'react-native'
+import { StyleSheet, View, TextInput, Button, Alert, Text } from 'react-native'
 
 
 export default class LoginScreen extends React.Component {
@@ -12,7 +12,10 @@ export default class LoginScreen extends React.Component {
     this.state = {
       username: '',
       password: '',
+      loginAs: '',
     }
+
+    this.getLoginAs()
   }
 
   render () {
@@ -32,10 +35,17 @@ export default class LoginScreen extends React.Component {
           style={styles.textInput}
           secureTextEntry={true}
         />
-        <View style={{flex: 1, marginTop: 15}}>
+        <View style={{marginTop: 15, marginBottom: 15}}>
           <Button
             title="Login"
             onPress={() => this.login()}
+          />
+        </View>
+        <Text>Login as: {this.state.loginAs}</Text>
+        <View style={{marginTop: 15, marginBottom: 15}}>
+          <Button
+            title="Logout"
+            onPress={() => this.logout()}
           />
         </View>
       </View>
@@ -43,7 +53,53 @@ export default class LoginScreen extends React.Component {
   }
 
   login () {
-    Alert.alert('Login', 'Hi ' + this.state.username)
+    let data = new FormData()
+    data.append('username', this.state.username)
+    data.append('password', this.state.password)
+
+    fetch('http://192.168.1.138:5000/login', {
+      credentials: 'same-origin',
+      method: 'POST',
+      body: data
+    }).then((response) => {
+      if (response.status == 200) {
+        return response.json()
+      } else {
+        throw Error('Invalid username or password')
+      }
+    }).then((responseJson) => {
+      Alert.alert('Login Success', 'Hi ' + responseJson.username)
+      this.getLoginAs()
+    }).catch((error) => {
+      Alert.alert('Login Error', '' + error)
+    })
+  }
+
+  getLoginAs () {
+    fetch('http://192.168.1.138:5000/login/as', {
+      credentials: 'same-origin',
+    }).then((response) => {
+      if (response.status == 200) {
+        return response.json()
+      } else {
+        throw Error
+      }
+    }).then((responseJson) => {
+      this.setState({
+        loginAs: responseJson.username
+      })
+    }).catch((error) => {
+      this.setState({
+        loginAs: ''
+      })
+    })
+  }
+
+  logout () {
+    fetch('http://192.168.1.138:5000/logout', {
+      credentials: 'same-origin',
+    }).then(() => { this.getLoginAs() })
+    .catch(() => { this.getLoginAs() })
   }
 }
 
