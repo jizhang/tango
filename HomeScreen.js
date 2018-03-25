@@ -13,12 +13,20 @@ export default class HomeScreen extends React.Component {
         <Text>Open up App.js to start working on your app!</Text>
         <Text>Changes you make will automatically reload.</Text>
         <Text>Shake your phone to open the developer menu.</Text>
-        <Button
-          title="Login"
-          onPress={() =>
-            navigate('Login')
-          }
-        />
+        <View style={{ margin: 10 }}>
+          <Button
+            title="Login"
+            onPress={() =>
+              navigate('Login')
+            }
+          />
+        </View>
+        <View style={{ margin: 10 }}>
+          <Button
+            title="Recall"
+            onPress={() => navigate('TaskRecall')}
+          />
+        </View>
       </View>
     );
   }
