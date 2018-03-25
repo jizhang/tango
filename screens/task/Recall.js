@@ -1,6 +1,7 @@
 import React from 'react'
 import { StyleSheet, View, TextInput, Button, Alert, Text } from 'react-native'
 import _ from 'lodash'
+import request from '../../services/request'
 
 const MARK_NEW = 0
 const MARK_REMEMBER = 1
@@ -12,7 +13,8 @@ export default class Recall extends React.Component {
   }
 
   state = {
-    taskName: '新编日语第二册 第十五課 会社の実習',
+    collectionName: '',
+    taskName: '',
     words: [],
     word: '',
     desc: '',
@@ -21,28 +23,25 @@ export default class Recall extends React.Component {
   }
 
   componentDidMount() {
-    this.setState({
-      words: [
-        {
-          word: '実習',
-          desc: 'じっしゅう\n名/他サ',
-          translate: '实习',
-          mark: MARK_NEW,
-        },
-        {
-          word: '学科',
-          desc: 'がっか\n名',
-          translate: '学科',
-          mark: MARK_NEW,
-        },
-        {
-          word: '面接',
-          desc: 'めんせつ\n名/自サ',
-          translate: '面试',
-          mark: MARK_NEW,
+    request('/task/get', { id: 1 })
+      .then(payload => {
+        if (!payload) {
+          this.props.navigation.navigate('Home')
+          return
         }
-      ],
-    }, this.nextWord)
+
+        let newState = {
+          collectionName: payload.collection_name,
+          taskName: payload.taskName,
+        }
+
+        newState.words = _.map(payload.words, word => {
+          word.mark = MARK_NEW
+          return word
+        })
+
+        this.setState(newState, this.nextWord)
+      })
   }
 
   getRemembered = () => {
@@ -94,7 +93,7 @@ export default class Recall extends React.Component {
     const { navigate } = this.props.navigation
     return (
       <View style={styles.container}>
-        <Text>{this.state.taskName}</Text>
+        <Text>{this.state.collectionName} {this.state.taskName}</Text>
         <Text>Progress {this.getRemembered()} / {this.state.words.length}</Text>
         <Text>{this.state.word}</Text>
         <View>
