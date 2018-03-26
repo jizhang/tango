@@ -1,0 +1,5 @@
+#!/bin/bash
+
+export FLASK_APP=tango
+export FLASK_DEBUG=1
+venv/bin/flask "$@"
