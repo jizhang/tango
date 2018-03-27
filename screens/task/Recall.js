@@ -32,7 +32,7 @@ export default class Recall extends React.Component {
 
         let newState = {
           collectionName: payload.collection_name,
-          taskName: payload.taskName,
+          taskName: payload.task_name,
         }
 
         newState.words = _.map(payload.words, word => {
@@ -95,7 +95,7 @@ export default class Recall extends React.Component {
       <View style={styles.container}>
         <Text>{this.state.collectionName} {this.state.taskName}</Text>
         <Text>Progress {this.getRemembered()} / {this.state.words.length}</Text>
-        <Text>{this.state.word}</Text>
+        <Text>{this.state.translate}</Text>
         <View>
           <Button
             title="Show"
